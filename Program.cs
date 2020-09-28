@@ -8,9 +8,15 @@ namespace currencyDevil
     {
         static void Main(string[] args)
         {
-            Processing(ChekFile());
+            SaveFile(searchingPuth(Processing(ChekFile())));
         }
-
+        static void SaveFile(string result)
+        {
+            using (StreamWriter file2 = new StreamWriter("output.txt", true))
+            {
+                file2.Write(result);
+            }
+        }
         static StreamReader ChekFile()
         {
             try
@@ -32,9 +38,8 @@ namespace currencyDevil
                 return null;
             }
         }
-        static void Processing(StreamReader file)
+        static List<string> Processing(StreamReader file)
         {
-            string start, finish, next;
             int x = -1;
             List<string> scan = new List<string>();
 
@@ -47,12 +52,49 @@ namespace currencyDevil
             {
                 scan.Add(file2.ReadLine());
             }            
-           
-            foreach (var item in scan)
+         
+            return scan;
+
+        }
+        static string searchingPuth(List<string> list)
+        {
+            int x = list.Count - 2;
+            string[] sardina = new string[list.Count];
+            bool check = false;
+            string[,] map = new string[x, 2];
+            int id = 0;
+
+            foreach (var item in list)
             {
-                Console.WriteLine(item);
+                sardina[id] = item;
+                id++;
+            }
+            var firstPosition = new { Start = sardina[0].Split(' ')[0], Finish = sardina[0].Split(' ')[1] };
+            string selector = firstPosition.Start;
+            string result = firstPosition.Start + " ";
+
+            for (int i = 0; i < sardina.Length-2; i++)
+            {               
+                map[i, 0] = sardina[i+2].Split(' ')[0];
+                map[i, 1] = sardina[i+2].Split(' ')[1];
             }
 
+            do
+            {
+                for (int i = 0; i < x; i++)
+                {
+                    check = false;
+
+                    if (selector == map[i, 0])
+                    {
+                        selector = map[i, 1];
+                        result += selector+ " " ;
+                        check = true;
+                    }
+                }
+
+            } while (check);
+            return result;
         }
 
     }
