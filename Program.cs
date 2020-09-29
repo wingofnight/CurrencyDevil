@@ -12,7 +12,7 @@ namespace currencyDevil
         }
         static void SaveFile(string result)
         {
-            using (StreamWriter file2 = new StreamWriter("output.txt", true))
+            using (StreamWriter file2 = new StreamWriter("output.txt", false))
             {
                 file2.Write(result);
             }
@@ -40,28 +40,26 @@ namespace currencyDevil
         }
         static List<string> Processing(StreamReader file)
         {
-            int x = -1;
+            int x = 0;
             List<string> scan = new List<string>();
 
             foreach (var item in file.ReadLine())
             {
                 x++;
             }
+            file.Close();
             StreamReader file2 = new StreamReader("input.txt");
-            for (int i = 0; i < x; i++)
+            for (int i = 0; i <= x; i++)
             {
                 scan.Add(file2.ReadLine());
-            }            
-         
+            }
+            
             return scan;
 
         }
         static string searchingPuth(List<string> list)
-        {
-            int x = list.Count - 2;
-            string[] sardina = new string[list.Count];
-            bool check = false;
-            string[,] map = new string[x, 2];
+        {            
+            string[] sardina = new string[list.Count];    
             int id = 0;
 
             foreach (var item in list)
@@ -69,31 +67,100 @@ namespace currencyDevil
                 sardina[id] = item;
                 id++;
             }
-            var firstPosition = new { Start = sardina[0].Split(' ')[0], Finish = sardina[0].Split(' ')[1] };
-            string selector = firstPosition.Start;
-            string result = firstPosition.Start + " ";
 
-            for (int i = 0; i < sardina.Length-2; i++)
-            {               
-                map[i, 0] = sardina[i+2].Split(' ')[0];
-                map[i, 1] = sardina[i+2].Split(' ')[1];
+            var firstPosition = new { Start = sardina[0].Split(' ')[0], Finish = sardina[0].Split(' ')[1] };
+            
+            string result = "";
+           
+            list.RemoveAt(0);
+            list.RemoveAt(0);
+            list.Sort();
+            List<string> startList = new List<string>();
+            List<string> newResult = new List<string>();
+           
+            foreach (var item in list)
+            {
+                if (item.Split(' ')[0] == firstPosition.Start)
+                {
+                    startList.Add(item);
+                    if (item.Split(' ')[1] == firstPosition.Finish)
+                    {
+                        newResult.Add(item);
+                    }                    
+                }                
+                Console.WriteLine(item);
             }
 
-            do
+            List<string> buf = new List<string>();
+            List<string> roundTwo = new List<string>();
+           
+            foreach (var item in startList)
             {
-                for (int i = 0; i < x; i++)
-                {
-                    check = false;
+                list.Remove(item);
+                Console.WriteLine();
+                Console.WriteLine(item);
 
-                    if (selector == map[i, 0])
+                foreach (var zitem in list)
+                {
+                    if (item.Split(' ')[1] == zitem.Split(' ')[0])
                     {
-                        selector = map[i, 1];
-                        result += selector+ " " ;
-                        check = true;
+                        buf.Add(zitem);
+                        Console.WriteLine("*"+zitem);
+                        if (zitem.Split(' ')[1] == firstPosition.Finish)
+                        {
+                            newResult.Add(item + " " + zitem);
+                        }
+                        else
+                        {
+                            roundTwo.Add(item + " " + zitem);
+                        }
+                    }                    
+                }
+            }
+
+            list = buf;
+            foreach (var item in list)
+            {              
+                Console.WriteLine();
+                Console.WriteLine("$"+item);
+            }
+            foreach (var item in newResult)
+            {
+                Console.WriteLine(item);
+            }
+            foreach (var item in roundTwo)
+            {
+                Console.WriteLine(item);
+            }
+            //2 шаг после этого шага, принцип обработки данных выведится в отдельную функцию.
+           
+            if (newResult.Count == 0)
+            {
+                roundTwo = list;
+                foreach (var item in roundTwo)
+                {
+                    list.Remove(item);
+                    Console.WriteLine();
+                    Console.WriteLine(item);
+
+                    foreach (var zitem in list)
+                    {
+                        if (item.Split(' ')[1] == zitem.Split(' ')[0])
+                        {
+                            buf.Add(zitem);
+                            Console.WriteLine("*" + zitem);
+                            if (zitem.Split(' ')[1] == firstPosition.Finish)
+                            {
+                                newResult.Add(item + " " + zitem);
+                            }
+                            else
+                            {
+                                roundTwo.Add(item + " " + zitem);
+                            }
+                        }
                     }
                 }
-
-            } while (check);
+            }
             return result;
         }
 
